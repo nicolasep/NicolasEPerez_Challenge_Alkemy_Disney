@@ -16,6 +16,7 @@ namespace MundoDisney.Entities
         [Range(1,5)]
         public int Calificacion { get; set; }
 
+        public Genero Genero { get; set; }
         public ICollection<Personaje> Personajes { get; set; }
 
     }
