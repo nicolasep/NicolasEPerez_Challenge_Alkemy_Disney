@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MundoDisney.Context;
+using MundoDisney.Interfaces;
+using MundoDisney.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,9 +40,12 @@ namespace MundoDisney
             services.AddDbContextPool<DisneyContext>(optionsAction: (provider, builder) =>
             {
                 builder.UseInternalServiceProvider(provider);
-                builder.UseSqlServer(connectionString: "Data Source=LAPTOP-2C5C2L3J;Database=MundoDisneyDB;Integrated Security=true;");
+                builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
 
             });
+            services.AddScoped<IGeneroRepository, GeneroRepository>();
+            services.AddScoped<IPeliculaOSerieRepository, PeliculaOSerieRepository>();
+            services.AddScoped<IPersonajeRepository, PersonajeRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +68,7 @@ namespace MundoDisney
             {
                 endpoints.MapControllers();
             });
+            
         }
     }
 }
