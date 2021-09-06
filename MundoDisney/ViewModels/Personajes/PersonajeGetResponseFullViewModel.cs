@@ -1,11 +1,12 @@
-﻿using System;
+﻿using MundoDisney.ViewModels.PeliculasOSeries;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MundoDisney.Entities
+namespace MundoDisney.ViewModels.Personajes
 {
-    public class Personaje
+    public class PersonajeGetResponseFullViewModel
     {
         public int Id { get; set; }
         public string Imagen { get; set; }
@@ -13,6 +14,6 @@ namespace MundoDisney.Entities
         public int Edad { get; set; }
         public int Peso { get; set; }
         public string Historia { get; set; }
-        public ICollection<PeliculaOSerie> PeliculasOSeries { get; set; } = new List<PeliculaOSerie>();
+        public List<PeliculaOSerieResponseViewModel> Peliculas { get; set; }
     }
 }

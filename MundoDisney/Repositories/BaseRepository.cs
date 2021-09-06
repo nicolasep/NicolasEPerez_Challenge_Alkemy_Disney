@@ -10,7 +10,12 @@ namespace MundoDisney.Repositories
     public abstract class BaseRepository<TEntity, TContext> : IRepository<TEntity> where TEntity : class where TContext : DbContext
     {
         protected readonly TContext _context;
+        private DbSet<TEntity> _dbSet;
 
+        protected DbSet<TEntity> DbSet
+        {
+            get { return _dbSet ??= _context.Set<TEntity>(); }
+        }
         protected BaseRepository(TContext context)
         {
             _context = context;
@@ -24,15 +29,10 @@ namespace MundoDisney.Repositories
 
         public TEntity Delete(int id)
         {
-
-            var aux = Get(id);
-            if (aux != null)
-            {
-                _context.Set<TEntity>().Remove(aux);
-                _context.SaveChanges();
-                return aux;
-            }
-            return null;
+            TEntity entity = _context.Find<TEntity>(id);
+            _context.Remove(entity);
+            _context.SaveChanges();
+            return entity;
         }
 
         public TEntity Get(int id)
@@ -47,14 +47,10 @@ namespace MundoDisney.Repositories
 
         public TEntity Update(TEntity entity)
         {
-            var aux = _context.Set<TEntity>().Find(entity);
-            if (aux != null)
-            {
-                _context.Set<TEntity>().Update(aux);
-                _context.SaveChanges();
-                return aux;
-            }
-            return null;
+            _context.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+            _context.SaveChanges();
+            return entity;
         }
     }
 }

@@ -8,5 +8,8 @@ namespace MundoDisney.Interfaces
 {
     public interface IPeliculaOSerieRepository:IRepository<PeliculaOSerie>
     {
+        List<PeliculaOSerie> GetPersonajesConPeliculas();
+        Personaje BuscarPeliculaOSerie(int id);
+        PeliculaOSerie GetPeliculaOSeriePorId(int id);
     }
 }

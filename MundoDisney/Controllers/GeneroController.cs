@@ -23,14 +23,14 @@ namespace MundoDisney.Controllers
         {
             return Ok(_generoRepository.GetAllEntities());
         }
-
+        /*
         [HttpGet]
         [Route(template: "{id}")]
         public IActionResult Get(int id)
         {
             return Ok(_generoRepository.Get(id));
         }
-
+        */
         [HttpPost]
         public IActionResult Post(Genero genero)
         {
@@ -49,6 +49,7 @@ namespace MundoDisney.Controllers
 
             return Ok(_generoRepository.Update(genero));
         }
+        /*
         [HttpDelete]
         [Route(template: "{id}")]
         public IActionResult Delete(int id)
@@ -60,6 +61,6 @@ namespace MundoDisney.Controllers
             }
 
             return Ok(_generoRepository.Delete(id));
-        }
+        }*/
     }
 }
