@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace MundoDisney.Controllers
 {
+    [ApiController]
+    [Route("movies")]
     public class PeliculaOSerieController : ControllerBase
     {
         private readonly IPeliculaOSerieRepository _peliculaOSerieRepository;
@@ -21,7 +23,7 @@ namespace MundoDisney.Controllers
 
 
         [HttpGet]
-        [Route(template: "/movies")]
+       
         public IActionResult Get()
         {
             var aux = _peliculaOSerieRepository.GetAllEntities();
@@ -41,7 +43,7 @@ namespace MundoDisney.Controllers
 
 
         [HttpGet]
-        [Route(template: "/movie/id")]
+        [Route(template: "{id}")]
         public IActionResult Get([FromQuery] int id)
         {
             var listaPeliculasOSeries = _peliculaOSerieRepository.GetPersonajesConPeliculas();
@@ -123,7 +125,7 @@ namespace MundoDisney.Controllers
         }
         
         [HttpPost]
-        [Route(template: "/movies")]
+        
         public IActionResult Post([FromBody] PeliculaOSeriePostResponseViewModel viewModel)
         {
 
@@ -151,7 +153,7 @@ namespace MundoDisney.Controllers
         }
         
         [HttpPut]
-        [Route(template: "/movies/{movie}")]
+       
         public IActionResult Put(PeliculaOSerie peliculaOSerie)
         {
             var auxPersonaje = _peliculaOSerieRepository.Get(peliculaOSerie.Id);
@@ -169,7 +171,7 @@ namespace MundoDisney.Controllers
         }
 
         [HttpDelete]
-        [Route(template: "/movie/")]
+       
         public IActionResult Delete([FromQuery] int id)
         {
 

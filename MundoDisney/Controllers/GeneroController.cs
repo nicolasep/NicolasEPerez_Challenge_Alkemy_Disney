@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace MundoDisney.Controllers
 {
+    [ApiController]
+    [Route("genre")]
     public class GeneroController : ControllerBase
     {
         private readonly IGeneroRepository _generoRepository;
@@ -23,14 +25,14 @@ namespace MundoDisney.Controllers
         {
             return Ok(_generoRepository.GetAllEntities());
         }
-        /*
+        
         [HttpGet]
         [Route(template: "{id}")]
-        public IActionResult Get(int id)
+        public IActionResult GetId(int id)
         {
             return Ok(_generoRepository.Get(id));
         }
-        */
+        
         [HttpPost]
         public IActionResult Post(Genero genero)
         {
@@ -49,9 +51,9 @@ namespace MundoDisney.Controllers
 
             return Ok(_generoRepository.Update(genero));
         }
-        /*
+        
         [HttpDelete]
-        [Route(template: "{id}")]
+        
         public IActionResult Delete(int id)
         {
 
@@ -61,6 +63,6 @@ namespace MundoDisney.Controllers
             }
 
             return Ok(_generoRepository.Delete(id));
-        }*/
+        }
     }
 }

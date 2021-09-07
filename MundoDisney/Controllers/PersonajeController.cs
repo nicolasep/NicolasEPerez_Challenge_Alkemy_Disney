@@ -8,6 +8,8 @@ using System.Linq;
 
 namespace MundoDisney.Controllers
 {
+    [ApiController]
+    [Route("characters")]
     public class PersonajeController:ControllerBase
     {
         private readonly IPersonajeRepository _personajeRepository;
@@ -19,7 +21,7 @@ namespace MundoDisney.Controllers
 
         
         [HttpGet]
-        [Route(template:"/characters")]
+       
         public IActionResult Get()
         {
             var aux = _personajeRepository.GetAllEntities();
@@ -36,7 +38,7 @@ namespace MundoDisney.Controllers
         }
         
         [HttpGet]
-        [Route(template: "/characters/id")]
+        [Route(template: "{id}")]
         public IActionResult Get([FromQuery]int id)
         {
             var listaPersonajes = _personajeRepository.GetPersonajesConPeliculas();
@@ -141,7 +143,7 @@ namespace MundoDisney.Controllers
         }
 
         [HttpPost]
-        [Route(template: "/characters")]
+        
         public IActionResult Post([FromBody]PersonajesPostResponseViewModel viewModel)
         {
             
@@ -168,7 +170,7 @@ namespace MundoDisney.Controllers
             return Ok();
         }
         [HttpPut]
-        [Route(template: "/character/{personaje}")]
+        
         public IActionResult Put(Personaje personaje)
         {
             var auxPersonaje = _personajeRepository.Get(personaje.Id);
@@ -186,7 +188,7 @@ namespace MundoDisney.Controllers
         }
 
         [HttpDelete]
-        [Route(template: "/characters/")]
+        
         public IActionResult Delete([FromQuery]int id)
         {
 
