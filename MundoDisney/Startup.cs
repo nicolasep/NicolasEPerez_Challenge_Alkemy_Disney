@@ -1,19 +1,24 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MundoDisney.Context;
+using MundoDisney.Entities;
 using MundoDisney.Interfaces;
 using MundoDisney.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MundoDisney
@@ -35,7 +40,57 @@ namespace MundoDisney
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MundoDisney", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer",
+                    new OpenApiSecurityScheme
+                    {
+                        Name = "Authorization",
+                        Type = SecuritySchemeType.ApiKey,
+                        Scheme = "Bearer",
+                        BearerFormat = "JWT",
+                        In = ParameterLocation.Header,
+                        Description = "Ingrese 'Bearer' [Token] para autentificarse"
+                    });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        }, new List<string>()
+                    }
+                }) ;
             });
+
+            services.AddIdentity<Usuario, IdentityRole>()
+                .AddEntityFrameworkStores<UsuarioContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidAudience = "https://localhost:5001",
+                        ValidIssuer = "https://localhost:5001",
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KeySecretaSuperLargaDeAUTORIZACION"))
+                    };
+                });
+
             services.AddEntityFrameworkSqlServer();
             services.AddDbContextPool<DisneyContext>(optionsAction: (provider, builder) =>
             {
@@ -43,6 +98,13 @@ namespace MundoDisney
                 builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
 
             });
+            services.AddDbContext<UsuarioContext>(optionsAction: (provider, builder) =>
+            {
+                builder.UseInternalServiceProvider(provider);
+                builder.UseSqlServer(Configuration.GetConnectionString("UserConnection"));
+
+            });
+            
             services.AddScoped<IGeneroRepository, GeneroRepository>();
             services.AddScoped<IPeliculaOSerieRepository, PeliculaOSerieRepository>();
             services.AddScoped<IPersonajeRepository, PersonajeRepository>();

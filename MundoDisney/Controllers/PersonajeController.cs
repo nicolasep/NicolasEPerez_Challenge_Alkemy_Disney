@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MundoDisney.Entities;
 using MundoDisney.Interfaces;
 using MundoDisney.ViewModels.PeliculasOSeries;
@@ -10,6 +11,7 @@ namespace MundoDisney.Controllers
 {
     [ApiController]
     [Route("characters")]
+    [Authorize]
     public class PersonajeController:ControllerBase
     {
         private readonly IPersonajeRepository _personajeRepository;
