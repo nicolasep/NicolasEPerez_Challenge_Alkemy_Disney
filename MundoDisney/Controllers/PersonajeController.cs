@@ -6,6 +6,7 @@ using MundoDisney.ViewModels.PeliculasOSeries;
 using MundoDisney.ViewModels.Personajes;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MundoDisney.Controllers
 {
@@ -15,10 +16,12 @@ namespace MundoDisney.Controllers
     public class PersonajeController:ControllerBase
     {
         private readonly IPersonajeRepository _personajeRepository;
+        private readonly IPeliculaOSerieRepository _peliculaOSerieRepository;
 
-        public PersonajeController(IPersonajeRepository personajeRepository)
+        public PersonajeController(IPersonajeRepository personajeRepository, IPeliculaOSerieRepository peliculaOSerieRepository)
         {
             _personajeRepository = personajeRepository;
+            _peliculaOSerieRepository = peliculaOSerieRepository;
         }
 
         
@@ -55,6 +58,9 @@ namespace MundoDisney.Controllers
                         Id = personaje.Id,
                         Imagen = personaje.Imagen,
                         Nombre = personaje.Nombre,
+                        Peso = personaje.Peso,
+                        Edad = personaje.Edad,
+                        Historia = personaje.Historia,
                         Peliculas = personaje.PeliculasOSeries.Any() ? personaje.PeliculasOSeries.Select(x => new PeliculaOSerieResponseViewModel
                         {
                             Id = x.Id,
@@ -76,48 +82,38 @@ namespace MundoDisney.Controllers
         [Route(template: "/character")]
         public IActionResult Get([FromQuery] string name,int age, int movies)
         {
-            var listaPersonajes = _personajeRepository.GetPersonajesConPeliculas();
+            var listaPersonajes = _personajeRepository.GetPersonajesConPeliculas().Where(x => x.Nombre == name);
+
+            if(listaPersonajes == null)
+            {
+                return BadRequest(error: "No existe un personaje con ese nombre");
+            }
+
             var personajeViewModel = new List<PersonajeGetResponseFullViewModel>();
-            if (age>0)
+                
+        
+            foreach (var personaje in listaPersonajes)
+            {
+                personajeViewModel.Add(new PersonajeGetResponseFullViewModel
+                {
+                    Id = personaje.Id,
+                    Imagen = personaje.Imagen,
+                    Nombre = personaje.Nombre,
+                    Peliculas = personaje.PeliculasOSeries.Any() ? personaje.PeliculasOSeries.Select(x => new PeliculaOSerieResponseViewModel
+                    {
+                        Id = x.Id,
+                        Nombre = x.Titulo
+                    }).ToList() : null
+                });
+            }
+            if (age > 0)
             {
                 listaPersonajes = listaPersonajes.Where(x => x.Edad == age).ToList();
-                foreach (var personaje in listaPersonajes)
-                {
-                    personajeViewModel.Add(new PersonajeGetResponseFullViewModel
-                    {
-                        Id = personaje.Id,
-                        Imagen = personaje.Imagen,
-                        Nombre = personaje.Nombre,
-                        Peliculas = personaje.PeliculasOSeries.Any() ? personaje.PeliculasOSeries.Select(x => new PeliculaOSerieResponseViewModel
-                        {
-                            Id = x.Id,
-                            Nombre = x.Titulo
-                        }).ToList() : null
-                    });
-                }
             }
-            else if(!string.IsNullOrEmpty(name))
+            if (movies > 0)
             {
-                listaPersonajes = listaPersonajes.Where(x => x.Nombre == name).ToList();
-                foreach (var personaje in listaPersonajes)
-                {
-                    personajeViewModel.Add(new PersonajeGetResponseFullViewModel
-                    {
-                        Id = personaje.Id,
-                        Imagen = personaje.Imagen,
-                        Nombre = personaje.Nombre,
-                        Peliculas = personaje.PeliculasOSeries.Any() ? personaje.PeliculasOSeries.Select(x => new PeliculaOSerieResponseViewModel
-                        {
-                            Id = x.Id,
-                            Nombre = x.Titulo
-                        }).ToList() : null
-                    });
-                }
-            }
-            else if(movies > 0)
-            {
-                listaPersonajes = listaPersonajes.Where(x => x.PeliculasOSeries.FirstOrDefault(x => x.Id == movies)!= null).ToList();
-                if(listaPersonajes != null)
+                listaPersonajes = listaPersonajes.Where(x => x.PeliculasOSeries.FirstOrDefault(x => x.Id == movies) != null).ToList();
+                if (listaPersonajes != null)
                 {
                     foreach (var personaje in listaPersonajes)
                     {
@@ -134,14 +130,9 @@ namespace MundoDisney.Controllers
                         });
                     }
                 }
-                
             }
-            if (!personajeViewModel.Any())
-            {
-                return BadRequest(error: "No existen personajes con en esa busqueda");
-            }
-
-            return Ok(personajeViewModel);
+                    
+             return Ok(personajeViewModel);
         }
 
         [HttpPost]
@@ -152,14 +143,21 @@ namespace MundoDisney.Controllers
             Personaje aux = new Personaje
             {
                 Imagen = viewModel.Imagen,
-                Nombre = viewModel.Nombre
+                Nombre = viewModel.Nombre,
+                Edad = viewModel.Edad,
+                Peso = viewModel.Peso
             };
+            var existe =  _personajeRepository.GetAllEntities().Where(x => x.Nombre == aux.Nombre);
+            if(existe != null)
+            {
+                return BadRequest(error:$"El personaje {aux.Nombre} ya existe");
+            }
 
             if (viewModel.Peliculas.Any())
             {
                 foreach (var pelicula in viewModel.Peliculas)
                 {
-                    var dbPelicula = _personajeRepository.BuscarPeliculaOSerie(pelicula.Id);
+                    var dbPelicula = _peliculaOSerieRepository.Get(pelicula.Id);
 
                     if (dbPelicula == null)
                     {
@@ -169,7 +167,7 @@ namespace MundoDisney.Controllers
                 }
             }
             _personajeRepository.Add(aux);
-            return Ok();
+            return Ok("El Personaje fue creado con exito");
         }
         [HttpPut]
         

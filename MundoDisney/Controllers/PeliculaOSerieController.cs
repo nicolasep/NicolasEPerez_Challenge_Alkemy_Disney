@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MundoDisney.Entities;
 using MundoDisney.Interfaces;
 using MundoDisney.ViewModels.PeliculasOSeries;
@@ -12,13 +13,16 @@ namespace MundoDisney.Controllers
 {
     [ApiController]
     [Route("movies")]
+    [Authorize]
     public class PeliculaOSerieController : ControllerBase
     {
         private readonly IPeliculaOSerieRepository _peliculaOSerieRepository;
+        private readonly IPersonajeRepository _personajeRepository;
 
-        public PeliculaOSerieController(IPeliculaOSerieRepository peliculaOSerieRepository)
+        public PeliculaOSerieController(IPeliculaOSerieRepository peliculaOSerieRepository, IPersonajeRepository personajeRepository)
         {
             _peliculaOSerieRepository = peliculaOSerieRepository;
+            _personajeRepository = personajeRepository;
         }
 
 
@@ -74,72 +78,71 @@ namespace MundoDisney.Controllers
 
             return Ok(peliculaViewModel);
         }
-
-
         [HttpGet]
         [Route(template: "/movie")]
         public IActionResult Get([FromQuery] string name, int genre, string order)
         {
             var listaPeliculasOSeries = _peliculaOSerieRepository.GetPersonajesConPeliculas();
+            listaPeliculasOSeries.Where(x => x.Titulo == name);
+            if(listaPeliculasOSeries == null)
+            {
+                return BadRequest(error: $"No existe una pelicula con el nombre de: {name}");
+            }
             var peliculaViewModel = new List<PeliculaOSerieGetResponseFullViewModel>();
-            
-            if (!string.IsNullOrEmpty(name))
+            foreach (var pelicula in listaPeliculasOSeries)
             {
-                listaPeliculasOSeries = listaPeliculasOSeries.Where(x => x.Titulo == name).ToList();
-                foreach (var pelicula in listaPeliculasOSeries)
+                peliculaViewModel.Add(new PeliculaOSerieGetResponseFullViewModel
                 {
-                    peliculaViewModel.Add(new PeliculaOSerieGetResponseFullViewModel
+                    Id = pelicula.Id,
+                    Imagen = pelicula.Imagen,
+                    Fecha_De_Creacion = pelicula.Fecha_de_Creacion,
+                    Calificacion = pelicula.Calificacion,
+                    Genero = pelicula.Genero,
+                    Personajes = pelicula.Personajes.Any() ? pelicula.Personajes.Select(x => new PersonajeGetResponseViewModel
                     {
-                        Id = pelicula.Id,
-                        Imagen = pelicula.Imagen,
-                        Fecha_De_Creacion = pelicula.Fecha_de_Creacion,
-                        Calificacion = pelicula.Calificacion,
-                        Genero = pelicula.Genero,
-                        Personajes = pelicula.Personajes.Any() ? pelicula.Personajes.Select(x => new PersonajeGetResponseViewModel
-                        {
-                            Imagen = x.Imagen,
-                            Nombre = x.Nombre
-                        }).ToList() : null
-                    });
-                }
-                if(genre>0)
-                {
-                    peliculaViewModel.FirstOrDefault(x => x.Genero.Id == genre);
-                }
-                if(order == "DESC")
-                {
-                    peliculaViewModel.OrderByDescending(x => x.Fecha_De_Creacion);
-                }
-                else
-                {
-                    peliculaViewModel.OrderBy(x => x.Fecha_De_Creacion);
-                }
+                        Imagen = x.Imagen,
+                        Nombre = x.Nombre
+                    }).ToList() : null
+                });
             }
-            
-            if (!peliculaViewModel.Any())
+            if (genre > 0)
             {
-                return BadRequest(error: "No existen peliculas con esa busqueda");
+                listaPeliculasOSeries.Where(x => x.Genero.Id == genre);
             }
+            switch(order.ToUpper())
+            {
+                case "DESC":
+                    peliculaViewModel.OrderByDescending(x => x.Fecha_De_Creacion);
+                    break;
+                default:
+                    peliculaViewModel.OrderBy(x => x.Fecha_De_Creacion);
+                    break;
 
-            return Ok(peliculaViewModel);
+            }
+            return Ok(listaPeliculasOSeries);
         }
+        
         
         [HttpPost]
         
         public IActionResult Post([FromBody] PeliculaOSeriePostResponseViewModel viewModel)
         {
-
+            
             PeliculaOSerie aux = new PeliculaOSerie
             {
                 Imagen = viewModel.Imagen,
                 Titulo = viewModel.Titulo
             };
-
+            var existePelicula = _peliculaOSerieRepository.GetAllEntities().Where(x => x.Titulo == aux.Titulo);
+            if(existePelicula != null)
+            {
+                return BadRequest(error: $"La pelicula {aux.Titulo} ya existe");
+            }
             if (viewModel.Personajes.Any())
             {
                 foreach (var personaje in viewModel.Personajes)
                 {
-                    var dbPersonajes = _peliculaOSerieRepository.BuscarPeliculaOSerie(personaje.Id);
+                    var dbPersonajes = _personajeRepository.Get(personaje.Id);
 
                     if (dbPersonajes == null)
                     {

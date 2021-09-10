@@ -17,12 +17,9 @@ namespace MundoDisney.Repositories
         }
         public List<Personaje> GetPersonajesConPeliculas()
         {
-            return _context.Set<Personaje>().Include(x => x.PeliculasOSeries).ToList(); 
+            return DbSet.Include(x => x.PeliculasOSeries).ToList(); 
         }
-        public PeliculaOSerie BuscarPeliculaOSerie(int id)
-        {
-            return _context.PeliculadOSeries.Find(id);
-        }
+        
         public Personaje GetPersonajePorId(int id)
         {
             return DbSet.Include(x => x.PeliculasOSeries).FirstOrDefault(x => x.Id == id);

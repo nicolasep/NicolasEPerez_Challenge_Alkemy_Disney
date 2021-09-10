@@ -9,7 +9,7 @@ namespace MundoDisney.Repositories
 {
     public abstract class BaseRepository<TEntity, TContext> : IRepository<TEntity> where TEntity : class where TContext : DbContext
     {
-        protected readonly TContext _context;
+        private readonly TContext _context;
         private DbSet<TEntity> _dbSet;
 
         protected DbSet<TEntity> DbSet

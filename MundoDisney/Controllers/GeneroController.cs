@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MundoDisney.Entities;
 using MundoDisney.Interfaces;
 using System;
@@ -10,6 +11,7 @@ namespace MundoDisney.Controllers
 {
     [ApiController]
     [Route("genre")]
+    [Authorize]
     public class GeneroController : ControllerBase
     {
         private readonly IGeneroRepository _generoRepository;

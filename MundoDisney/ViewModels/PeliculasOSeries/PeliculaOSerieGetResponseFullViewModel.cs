@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace MundoDisney.ViewModels.PeliculasOSeries
 {
-    public class PeliculaOSerieGetResponseFullViewModel
+    public class PeliculaOSerieGetResponseFullViewModel : PeliculaOSerieGetResponseViewModel
     {
+
         public int Id { get; set; }
-        public string Imagen { get; set; }
-        public string Titulo { get; set; }
-        public DateTime Fecha_De_Creacion { get; set; }
         public int Calificacion { get; set; }
 
         public Genero Genero { get; set; }

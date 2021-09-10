@@ -15,6 +15,10 @@ using MundoDisney.Context;
 using MundoDisney.Entities;
 using MundoDisney.Interfaces;
 using MundoDisney.Repositories;
+using MundoDisney.Services;
+using SendGrid;
+using SendGrid.Extensions.DependencyInjection;
+using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,7 +91,7 @@ namespace MundoDisney
                         ValidAudience = "https://localhost:5001",
                         ValidIssuer = "https://localhost:5001",
                         IssuerSigningKey =
-                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KeySecretaSuperLargaDeAUTORIZACION"))
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"]))
                     };
                 });
 
@@ -108,6 +112,14 @@ namespace MundoDisney
             services.AddScoped<IGeneroRepository, GeneroRepository>();
             services.AddScoped<IPeliculaOSerieRepository, PeliculaOSerieRepository>();
             services.AddScoped<IPersonajeRepository, PersonajeRepository>();
+
+            services.AddSendGrid(o =>
+            {
+               
+                o.ApiKey = "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";
+            });
+
+            services.AddScoped<IMailService, MailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -124,8 +136,10 @@ namespace MundoDisney
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
 
+            app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

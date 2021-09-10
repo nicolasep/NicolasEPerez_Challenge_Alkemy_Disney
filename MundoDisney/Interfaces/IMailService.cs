@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace MundoDisney.Interfaces
 {
-    public interface IPersonajeRepository:IRepository<Personaje>
+    public interface IMailService
     {
-        List<Personaje> GetPersonajesConPeliculas();
-
-
-        Personaje GetPersonajePorId(int id);
+        Task SendMail(Usuario user);
     }
 }
