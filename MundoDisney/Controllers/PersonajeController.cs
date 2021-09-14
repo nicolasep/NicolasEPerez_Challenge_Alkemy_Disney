@@ -26,7 +26,7 @@ namespace MundoDisney.Controllers
 
         
         [HttpGet]
-       
+        //[Authorize(Roles = "Admin")]
         public IActionResult Get()
         {
             var aux = _personajeRepository.GetAllEntities();

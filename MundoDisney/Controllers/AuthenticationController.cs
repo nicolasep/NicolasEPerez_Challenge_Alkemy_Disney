@@ -24,12 +24,14 @@ namespace MundoDisney.Controllers
         private readonly UserManager<Usuario> _userManager;
         private readonly SignInManager<Usuario> _sigInManager;
         private readonly IMailService _mailService;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AuthenticationController(UserManager<Usuario> userManager, SignInManager<Usuario> sigInManager, IMailService mailService)
+        public AuthenticationController(UserManager<Usuario> userManager, SignInManager<Usuario> sigInManager, IMailService mailService, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _sigInManager = sigInManager;
             _mailService = mailService;
+            _roleManager = roleManager;
         }
 
         [HttpPost]
@@ -63,6 +65,17 @@ namespace MundoDisney.Controllers
                         Message = $"Error al crear el usuario: {string.Join(", ", result.Errors.Select(x => x.Description))}"
                     });
             }
+            if (!await _roleManager.RoleExistsAsync("User"))
+            {
+                await _roleManager.CreateAsync(new IdentityRole("User"));
+            }
+            if (!await _roleManager.RoleExistsAsync("Admin"))
+            {
+                await _roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+
+            await _userManager.AddToRoleAsync(user, "Admin");
+            await _mailService.SendMail(user);
 
             return Ok(new
             {
@@ -102,6 +115,13 @@ namespace MundoDisney.Controllers
                         Message = $"Error al crear el usuario: {string.Join(", ",result.Errors.Select(x => x.Description))}"
                     });
             }
+            if (!await _roleManager.RoleExistsAsync("User"))
+            {
+                await _roleManager.CreateAsync(new IdentityRole("User"));
+            }
+
+
+            await _userManager.AddToRoleAsync(user, "User");
             await _mailService.SendMail(user);
             return Ok(new
             {
