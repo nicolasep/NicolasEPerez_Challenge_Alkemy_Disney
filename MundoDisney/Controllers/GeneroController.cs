@@ -2,10 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MundoDisney.Entities;
 using MundoDisney.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MundoDisney.Controllers
 {
@@ -36,6 +32,7 @@ namespace MundoDisney.Controllers
         }
         
         [HttpPost]
+        [Authorize(Roles = "User")]
         public IActionResult Post(Genero genero)
         {
             _generoRepository.Add(genero);
@@ -44,6 +41,7 @@ namespace MundoDisney.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public IActionResult Put(Genero genero)
         {
             if (_generoRepository.Get(genero.Id) == null)
@@ -55,7 +53,7 @@ namespace MundoDisney.Controllers
         }
         
         [HttpDelete]
-        
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
 

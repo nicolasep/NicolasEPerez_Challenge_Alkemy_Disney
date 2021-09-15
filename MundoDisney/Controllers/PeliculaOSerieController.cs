@@ -124,7 +124,7 @@ namespace MundoDisney.Controllers
         
         
         [HttpPost]
-        
+        [Authorize(Roles = "User")]
         public IActionResult Post([FromBody] PeliculaOSeriePostResponseViewModel viewModel)
         {
             
@@ -156,7 +156,7 @@ namespace MundoDisney.Controllers
         }
         
         [HttpPut]
-       
+        [Authorize(Roles = "Admin")]
         public IActionResult Put(PeliculaOSerie peliculaOSerie)
         {
             var auxPersonaje = _peliculaOSerieRepository.Get(peliculaOSerie.Id);
@@ -174,7 +174,7 @@ namespace MundoDisney.Controllers
         }
 
         [HttpDelete]
-       
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete([FromQuery] int id)
         {
 

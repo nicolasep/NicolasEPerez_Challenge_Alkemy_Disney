@@ -75,6 +75,7 @@ namespace MundoDisney.Controllers
             }
 
             await _userManager.AddToRoleAsync(user, "Admin");
+            
             await _mailService.SendMail(user);
 
             return Ok(new

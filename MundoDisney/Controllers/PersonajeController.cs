@@ -26,7 +26,6 @@ namespace MundoDisney.Controllers
 
         
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
         public IActionResult Get()
         {
             var aux = _personajeRepository.GetAllEntities();
@@ -136,7 +135,7 @@ namespace MundoDisney.Controllers
         }
 
         [HttpPost]
-        
+        [Authorize(Roles = "User")]
         public IActionResult Post([FromBody]PersonajesPostResponseViewModel viewModel)
         {
             
@@ -170,7 +169,7 @@ namespace MundoDisney.Controllers
             return Ok("El Personaje fue creado con exito");
         }
         [HttpPut]
-        
+        [Authorize(Roles = "Admin")]
         public IActionResult Put(Personaje personaje)
         {
             var auxPersonaje = _personajeRepository.Get(personaje.Id);
@@ -188,7 +187,7 @@ namespace MundoDisney.Controllers
         }
 
         [HttpDelete]
-        
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete([FromQuery]int id)
         {
 
