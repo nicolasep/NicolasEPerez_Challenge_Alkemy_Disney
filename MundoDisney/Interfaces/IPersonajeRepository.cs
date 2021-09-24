@@ -1,4 +1,6 @@
 ﻿using MundoDisney.Entities;
+using MundoDisney.Helpers;
+using MundoDisney.ResourceParameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +10,7 @@ namespace MundoDisney.Interfaces
 {
     public interface IPersonajeRepository:IRepository<Personaje>
     {
+        PagedList<Personaje> GetPersonajesConPeliculasConParametros(PersonajeParameters personajeParameters);
         List<Personaje> GetPersonajesConPeliculas();
 
 

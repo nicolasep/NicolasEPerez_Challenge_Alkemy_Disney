@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MundoDisney.Entities;
 using MundoDisney.Interfaces;
+using MundoDisney.ResourceParameters;
 using MundoDisney.ViewModels.PeliculasOSeries;
 using MundoDisney.ViewModels.Personajes;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace MundoDisney.Controllers
 {
     [ApiController]
     [Route("characters")]
-    [Authorize]
+    //[Authorize]
     public class PersonajeController:ControllerBase
     {
         private readonly IPersonajeRepository _personajeRepository;
@@ -26,9 +27,9 @@ namespace MundoDisney.Controllers
 
         
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] PersonajeParameters personajeParameters)
         {
-            var aux = _personajeRepository.GetAllEntities();
+            var aux = _personajeRepository.GetPersonajesConPeliculasConParametros(personajeParameters);
             var personajeViewModel = new List<PersonajeGetResponseViewModel>();
             foreach (var personaje in aux)
             {
