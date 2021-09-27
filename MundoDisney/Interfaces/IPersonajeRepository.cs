@@ -10,7 +10,7 @@ namespace MundoDisney.Interfaces
 {
     public interface IPersonajeRepository:IRepository<Personaje>
     {
-        PagedList<Personaje> GetPersonajesConPeliculasConParametros(PersonajeParameters personajeParameters);
+        PagedList<Personaje> GetPersonajesConPeliculasConParametros(BaseParametersGetAllViewModel personajeParameters);
         List<Personaje> GetPersonajesConPeliculas();
 
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MundoDisney.ResourceParameters
 {
-    public class PersonajeParameters
+    public class BaseParametersGetAllViewModel
     {
         const int maxPagesSize = 20;
 

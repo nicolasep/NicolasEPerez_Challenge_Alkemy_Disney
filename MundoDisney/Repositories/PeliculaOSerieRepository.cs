@@ -1,19 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MundoDisney.Context;
 using MundoDisney.Entities;
+using MundoDisney.Helpers;
 using MundoDisney.Interfaces;
-using System;
+using MundoDisney.ResourceParameters;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MundoDisney.Repositories
 {
     public class PeliculaOSerieRepository : BaseRepository<PeliculaOSerie, DisneyContext>, IPeliculaOSerieRepository
     {
+        
         public PeliculaOSerieRepository(DisneyContext context) : base(context)
         {
 
+        }
+        public PagedList<PeliculaOSerie> GetPersonajesConPeliculasConParametros(BaseParametersGetAllViewModel baseParametersGetAllViewModel)
+        {
+            var list = DbSet.Include(x => x.Personajes).Include(x => x.Genero) as IQueryable<PeliculaOSerie>;
+            return PagedList<PeliculaOSerie>.Create(list, baseParametersGetAllViewModel.PageNumber, baseParametersGetAllViewModel.PageSize);
         }
         public List<PeliculaOSerie> GetPersonajesConPeliculas()
         {

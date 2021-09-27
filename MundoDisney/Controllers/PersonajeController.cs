@@ -27,7 +27,7 @@ namespace MundoDisney.Controllers
 
         
         [HttpGet]
-        public IActionResult Get([FromQuery] PersonajeParameters personajeParameters)
+        public IActionResult Get([FromQuery] BaseParametersGetAllViewModel personajeParameters)
         {
             var aux = _personajeRepository.GetPersonajesConPeliculasConParametros(personajeParameters);
             var personajeViewModel = new List<PersonajeGetResponseViewModel>();
@@ -44,7 +44,7 @@ namespace MundoDisney.Controllers
         
         [HttpGet]
         [Route(template: "{id}")]
-        public IActionResult Get([FromQuery]int id)
+        public IActionResult Get([FromQuery] int id)
         {
             var listaPersonajes = _personajeRepository.GetPersonajesConPeliculas();
             var personajeViewModel = new List<PersonajeGetResponseFullViewModel>();

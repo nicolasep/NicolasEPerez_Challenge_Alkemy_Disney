@@ -19,7 +19,7 @@ namespace MundoDisney.Repositories
         }
         
 
-        public PagedList<Personaje> GetPersonajesConPeliculasConParametros(PersonajeParameters personajeParameters)
+        public PagedList<Personaje> GetPersonajesConPeliculasConParametros(BaseParametersGetAllViewModel personajeParameters)
         {
             var list = DbSet.Include(x => x.PeliculasOSeries) as IQueryable<Personaje>;
             

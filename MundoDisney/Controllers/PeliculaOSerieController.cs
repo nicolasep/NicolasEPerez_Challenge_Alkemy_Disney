@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MundoDisney.Entities;
 using MundoDisney.Interfaces;
+using MundoDisney.ResourceParameters;
 using MundoDisney.ViewModels.PeliculasOSeries;
 using MundoDisney.ViewModels.Personajes;
 using System;
@@ -28,9 +29,9 @@ namespace MundoDisney.Controllers
 
         [HttpGet]
        
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] BaseParametersGetAllViewModel baseParametersGetAllViewModel)
         {
-            var aux = _peliculaOSerieRepository.GetAllEntities();
+            var aux = _peliculaOSerieRepository.GetPersonajesConPeliculasConParametros(baseParametersGetAllViewModel);
             var peliculaSerieViewModel = new List<PeliculaOSerieGetResponseViewModel>();
             foreach (var pelicula in aux)
             {
@@ -47,7 +48,7 @@ namespace MundoDisney.Controllers
 
 
         [HttpGet]
-        [Route(template: "{id}")]
+        [Route(template: "id")]
         public IActionResult Get([FromQuery] int id)
         {
             var listaPeliculasOSeries = _peliculaOSerieRepository.GetPersonajesConPeliculas();
